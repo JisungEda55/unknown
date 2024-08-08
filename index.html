@@ -3,112 +3,232 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WeHolic SOME Plan</title>
+    <title>7segment display count</title>
     <style>
+        @font-face {
+            font-family: 'goorm-sans-bold';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2408@1.0/goorm-sans-bold.woff2') format('woff2');
+            font-weight: 700;
+            font-style: normal;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: 'goorm-sans-bold', Arial, sans-serif; /* 폰트를 goorm-sans-bold로 설정 */
+            background-color: transparent;
             margin: 0;
-            padding: 0;
-            background-color: #f2f2f2;
+            height: 100vh;
+            justify-content: center;
         }
-        header {
-            background-color: #fac000;
-            color: #000000;
-            padding: 10px;
+        #displays {
+            display: flex;
+            gap: 10px;
+        }
+        .display {
+            position: relative;
+            width: 120px;
+            height: 200px;
+            background-color: #333; /* 배경색을 어두운 회색으로 설정 */
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        .segment {
+            position: absolute;
+            background-color: #e74c3c; /* 세그먼트 기본 색상 (빨간색) */
+            border-radius: 10px;
+            transition: opacity 0.3s; /* 세그먼트의 투명도 변화에 대한 부드러운 전환 효과 */
+            opacity: 0.1; /* 기본적으로 세그먼트는 거의 투명함 */
+        }
+        .segment.on {
+            opacity: 1; /* 활성화된 세그먼트는 완전히 불투명함 */
+        }
+        .top {
+            width: 60px;
+            height: 20px;
+            top: 10px;
+            left: 30px;
+        }
+        .top-left {
+            width: 20px;
+            height: 60px;
+            top: 30px;
+            left: 10px;
+        }
+        .top-right {
+            width: 20px;
+            height: 60px;
+            top: 30px;
+            right: 10px;
+        }
+        .middle {
+            width: 60px;
+            height: 20px;
+            top: 90px;
+            left: 30px;
+        }
+        .bottom-left {
+            width: 20px;
+            height: 60px;
+            top: 110px;
+            left: 10px;
+        }
+        .bottom-right {
+            width: 20px;
+            height: 60px;
+            top: 110px;
+            right: 10px;
+        }
+        .bottom {
+            width: 60px;
+            height: 20px;
+            top: 170px;
+            left: 30px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            border: none;
+            background-color: #3498db; /* 버튼 색상 (파란색) */
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s, transform 0.3s;
+            font-family: 'goorm-sans-bold', Arial, sans-serif; /* 버튼 텍스트에 폰트 적용 */
+        }
+        button:hover {
+            background-color: #2980b9; /* 버튼 호버 시 색상 (짙은 파란색) */
+            transform: translateY(-2px);
+        }
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: 'goorm-sans-bold', Arial, sans-serif; /* 컨트롤 텍스트에 폰트 적용 */
+        }
+        .controls input[type="range"] {
+            width: 200px;
+        }
+        .controls input[type="number"] {
+            width: 80px;
+            padding: 5px;
+            margin: 10px;
             text-align: center;
-            height: 50px; /* 헤더의 세로를 절반으로 지정 */
-        }
-        .logo {
-            float: left;
-            margin-right: 0px;
-            width: 170px; /* 로고 이미지의 너비를 170px로 지정 */
-            height: auto;
-            margin-top: 5px; /* 로고 이미지를 세로 중앙에 정렬 */
-        }
-        h1 {
-            display: inline-block;/* 텍스트가 로고 오른쪽에 위치하도록 함 */
-            margin-left: -590px;
-            margin-top: 16px;
-            vertical-align: middle; /* 텍스트를 세로 중앙에 정렬 */
-        }
-        main {
-            padding: 20px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        article {
-            background-color: #fff;
-            border-radius: 5px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        h2 {
-            color: #333;
-        }
-        }
-        h1 {
-            display: inline-block;/* 텍스트가 로고 오른쪽에 위치하도록 함 */
-            margin-left: -590px;
-            margin-top: 16px;
-            vertical-align: middle; /* 텍스트를 세로 중앙에 정렬 */
-        }
-        main {
-            padding: 20px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        article {
-            background-color: #fff;
-            border-radius: 5px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        h3 {
-            color: #333;
+            font-family: 'goorm-sans-bold', Arial, sans-serif; /* 숫자 입력란 텍스트에 폰트 적용 */
         }
     </style>
 </head>
 <body>
-    <header>
-        <img class="logo" src="https://private-user-images.githubusercontent.com/157635626/321299738-1b19e377-324b-473e-a3b6-5812ff859231.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MTI3NjMzMDMsIm5iZiI6MTcxMjc2MzAwMywicGF0aCI6Ii8xNTc2MzU2MjYvMzIxMjk5NzM4LTFiMTllMzc3LTMyNGItNDczZS1hM2I2LTU4MTJmZjg1OTIzMS5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjQwNDEwJTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI0MDQxMFQxNTMwMDNaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT1hYzUyNjVhMjQzMzFkNzA1YWY2YzA5NmYwN2ZmNmUyODJkZGIyNmUwMDYzMzdhYTBlYzlhNjJmNmNmMjdjNzljJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCZhY3Rvcl9pZD0wJmtleV9pZD0wJnJlcG9faWQ9MCJ9.zguNNNnt38RcRfcRHTyHKwlZTorc_JjpoImhQM5GrA8" alt="logo">
-        <h1>TeamDLE</h1>
-    </header>
-    <main>
-        <article>
-            <h2>우리들의 비밀스러운 WeHolic SOME Plan. 1 (쉿! 비밀이에요.)
-</h2>
-            <p>아시다시피, WeHolic TeamDLE(이하 'WeHolic, 위홀릭')의 리더인 신지성은 크리에이터로 더 잘 알려져 있습니다. (아마도?)<br>그리고 이 글을 작성하는 사람도 신지성이죠. 사실, WeHolic SOME Plan. 1은 WeHolic 기업에 대한 내용이 아닙니다. 플랜1은 위홀릭을 세우는 과정에 관한 내용입니다! 이 글이 작성되는 시점은 2024년 4월 10일입니다. 저는 이 계획이 궤도에 오를 수 있다는 것에 한 치의 의심도 하고 있지 않습니다. 이 글은 예상 혹은 망상에 더 가까운 글일 수 있지만, 이 계획을 실행할 것이기 때문에 작성합니다.</p>
+    <div id="displays">
+        <div class="display" id="display1">
+            <div class="segment top"></div>
+            <div class="segment top-left"></div>
+            <div class="segment top-right"></div>
+            <div class="segment middle"></div>
+            <div class="segment bottom-left"></div>
+            <div class="segment bottom-right"></div>
+            <div class="segment bottom"></div>
+        </div>
+        <div class="display" id="display2">
+            <div class="segment top"></div>
+            <div class="segment top-left"></div>
+            <div class="segment top-right"></div>
+            <div class="segment middle"></div>
+            <div class="segment bottom-left"></div>
+            <div class="segment bottom-right"></div>
+            <div class="segment bottom"></div>
+        </div>
+        <div class="display" id="display3">
+            <div class="segment top"></div>
+            <div class="segment top-left"></div>
+            <div class="segment top-right"></div>
+            <div class="segment middle"></div>
+            <div class="segment bottom-left"></div>
+            <div class="segment bottom-right"></div>
+            <div class="segment bottom"></div>
+        </div>
+    </div>
+    <div class="controls">
+        <label for="startNumber">Start number: </label>
+        <input type="number" id="startNumber" min="0" max="999" value="100">
+        <label for="speed">Speed (sec): </label>
+        <input type="range" id="speed" min="0.1" max="5" step="0.1" value="1">
+        <span id="speedValue">1sec</span>
+        <button onclick="startCounting()">Start</button>
+    </div>
 
-<p>먼저 이 계획에서 중요한 것들을 요약해봅시다.<br>
-<br>
-1. 관심을 받아야 합니다. (매우 중요!)<br>
-2. 그 관심이 선한 영향력을 끼칠 수 있어야 합니다. (착하고 성실한 이미지)<br>
-3. 세상을 바꾸는 것에 한 순간도 후회하지 않을 준비가 되었는가? (나의 선택이 후회될 것 같다면 실행하지 마십시오.)</p>
+    <script>
+        const segmentMap = {
+            '0': [1, 1, 1, 0, 1, 1, 1],
+            '1': [0, 0, 1, 0, 0, 1, 0],
+            '2': [1, 0, 1, 1, 1, 0, 1],
+            '3': [1, 0, 1, 1, 0, 1, 1],
+            '4': [0, 1, 1, 1, 0, 1, 0],
+            '5': [1, 1, 0, 1, 0, 1, 1],
+            '6': [1, 1, 0, 1, 1, 1, 1],
+            '7': [1, 0, 1, 0, 0, 1, 0],
+            '8': [1, 1, 1, 1, 1, 1, 1],
+            '9': [1, 1, 1, 1, 0, 1, 1]
+        };
 
-<p>1. 관심을 받아야 합니다.<br>
-관심을 받는다는 것은 기업을 운영하기 위해 매우 중요하다고 생각합니다. 지금도 전세계의 수많은 기업 또는 서비스들이 사용자에게 단 한 번의 관심도 받지 못하고 사라지고 있습니다. 사업을 하는 데에는 '관심'이 가장 중요하다고 생각합니다. 저는 이것을 하기 위해 미친 듯이 다양하고 창의적인 생각들로 위홀릭과 그 서비스들에게 사용자를 만날 수 있는 기회를 제공할 것입니다. 이 부분은 제가 가장 노력을 할 수 있는 부분이기도 합니다.</p>
+        let interval;
+        let count;
 
-<p>2. 그 관심이 선한 영향력을 끼칠 수 있어야 합니다.<br>
-사실 저는 착한 사람이거나 욕심이 없거나 하는 사람이 아닙니다. 욕심이 없었다면 애초에 기업을 구상하지도 않았을 겁니다. 하지만 제가 얻고자 하는 것은 기존의 기업들이 해왔던 것들이 아닙니다. 이 시장에서 살아남고자 한다면, 마치 착한 사람이 만든 착한 기업으로 사람들에게 인식되어야 가능하다고 생각합니다. (혹시 모르죠, 생각하는 대로 된다고 실제로 착해질지.)</p>
+        function updateDisplay(displayId, number) {
+            const segments = segmentMap[number];
+            const ids = ['top', 'top-left', 'top-right', 'middle', 'bottom-left', 'bottom-right', 'bottom'];
 
-<p>3. 세상을 바꾸는 것에 한 순간도 후회하지 않을 준비가 되었는가?<br>
-사업은 일론 머스크와 스티브 잡스를 따라야 한다고 생각합니다. 내가 바꾸고자 하는 세상이 내가 바꾸려고 시도하지 않았을 때보다 더 좋은 세상이라면 그 어떤 순간에도 후회해서는 안됩니다. "세상을 바꾸다. I 사는 법을 바꾸다."라는 위홀릭의 정신에 따라 죽음이 앞에 오더라도 세상을 바꾸는 것을 주저해서는 안됩니다.</p>
+            ids.forEach((id, index) => {
+                const element = document.querySelector(`#${displayId} .segment.${id}`);
+                if (segments[index]) {
+                    element.classList.add('on');
+                } else {
+                    element.classList.remove('on');
+                }
+            });
+        }
 
-<p>WeHolic SOME Plan. 1 을 마무리하며. <br>
-글이 중구난방이고 난해할 수 있습니다. 하지만 신지성은 정말로 세상을 바꿀 것입니다. <br>
-그리고 제 욕심은 결국 모든 사람의 욕망이 되고 모두가 내일을 위해 내 "일"을 할 수 있는 세상으로 바뀌는데 가장 큰 역할을 할 것입니다. <br>
-<br>
-2024년 04월 10일 신지성.</p>
+        function clearDisplays() {
+            document.querySelectorAll('.display .segment').forEach(segment => {
+                segment.classList.remove('on');
+            });
+        }
 
-        </article>
-        <article>
-            <h2>SOME Plan #2</h2>
-            <p>This is my second blog post. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-        </article>
-        <article>
-            <h2>SOME Plan #3</h2>
-            <p>This is my first blog post. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-        <!-- You can add more articles here -->
-    </main>
+        function startCounting() {
+            clearInterval(interval);
+            count = parseInt(document.getElementById('startNumber').value, 10) || 0;
+            const speed = parseFloat(document.getElementById('speed').value);
+            const delay = speed * 1000;
+
+            interval = setInterval(() => {
+                if (count < 0) {
+                    clearInterval(interval);
+                    clearDisplays();
+                    return;
+                }
+
+                const hundreds = Math.floor(count / 100);
+                const tens = Math.floor((count % 100) / 10);
+                const ones = count % 10;
+
+                updateDisplay('display1', hundreds.toString());
+                updateDisplay('display2', tens.toString());
+                updateDisplay('display3', ones.toString());
+
+                count--;
+            }, delay);
+        }
+
+        document.getElementById('speed').addEventListener('input', (event) => {
+            const speedValue = event.target.value;
+            document.getElementById('speedValue').textContent = `${speedValue}sec`;
+            if (interval) {
+                startCounting();
+            }
+        });
+    </script>
 </body>
 </html>
